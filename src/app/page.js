@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 
-/* Подключаем react-phone-input-2 */
+/* react-phone-input-2 */
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 
@@ -18,7 +18,6 @@ import ru from 'date-fns/locale/ru';
 registerLocale('ru', ru);
 
 export default function QuizPage() {
-  // Шаги квиза
   const steps = [
     {
       id: 1,
@@ -64,7 +63,6 @@ export default function QuizPage() {
     },
   ];
 
-  // Состояние формы
   const [formData, setFormData] = useState({
     travelDate: null,
     nights: '',
@@ -78,15 +76,14 @@ export default function QuizPage() {
     agreement: true,
   });
 
-  // Текущий шаг + прогресс
   const [currentStep, setCurrentStep] = useState(0);
   const current = steps[currentStep];
   const progress = Math.round((currentStep / (steps.length - 1)) * 100);
 
   /* Переход "Далее" */
   const goNext = () => {
+    // Проверка на шаге "contact"
     if (current.type === 'contact') {
-      // Проверяем поля "Телефон" и "Имя"
       if (!formData.phone) {
         alert('Пожалуйста, введите номер телефона');
         return;
@@ -101,49 +98,51 @@ export default function QuizPage() {
       }
     }
     if (currentStep < steps.length - 1) {
-      setCurrentStep((prev) => prev + 1);
+      setCurrentStep(prev => prev + 1);
     }
   };
 
   /* Переход "Назад" */
   const goBack = () => {
     if (currentStep > 0) {
-      setCurrentStep((prev) => prev - 1);
+      setCurrentStep(prev => prev - 1);
     }
   };
 
-  /* Автоматический переход при выборе радио */
+  /* Выбор радио (авто-переход) */
   const handleRadioSelect = (stepKey, option) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [stepKey]: option === 'Другое…' ? 'other' : option,
     }));
-    goNext(); // Сразу переходим на след. вопрос
+    // Сразу идём на следующий шаг
+    goNext();
   };
 
-  /* Общая обработка изменений */
+  /* Изменение в инпутах */
   const handleChange = (key, value) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
+    setFormData(prev => ({ ...prev, [key]: value }));
   };
 
-  /* Авто-переход при выборе даты */
+  /* Выбор даты (авто-переход) */
   const handleDateSelect = (date) => {
-    setFormData((prev) => ({ ...prev, travelDate: date }));
-    goNext(); // Сразу переходим на след. вопрос
+    setFormData(prev => ({ ...prev, travelDate: date }));
+    // После выбора даты сразу идём дальше
+    goNext();
   };
 
   /* Финальная отправка */
   const handleSubmit = () => {
     alert('Данные отправлены:\n' + JSON.stringify(formData, null, 2));
-    setCurrentStep((prev) => prev + 1);
+    setCurrentStep(prev => prev + 1);
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      {/* Карточка */}
+      {/* Карточка квиза */}
       <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg p-4 sm:p-8 relative flex flex-col justify-center overflow-hidden">
 
-        {/* Верх (аватар, имя, подсказка) */}
+        {/* (1) Верх (аватар, имя, подсказка) */}
         {current.type !== 'final' && (
           <div className="flex flex-col items-center mb-6">
             <div className="relative mb-2">
@@ -162,14 +161,14 @@ export default function QuizPage() {
           </div>
         )}
 
-        {/* Заголовок вопроса (не финал) */}
+        {/* (2) Заголовок вопроса (если не финал) */}
         {current.type !== 'final' && (
           <h2 className="text-2xl font-bold text-gray-700 mb-6 text-center">
             {current.question}
           </h2>
         )}
 
-        {/* Шаг: календарь */}
+        {/* (3) Шаг: календарь */}
         {current.type === 'date' && (
           <div className="flex justify-center mb-8">
             <DatePicker
@@ -183,7 +182,7 @@ export default function QuizPage() {
           </div>
         )}
 
-        {/* Шаг: радио + "Другое…" */}
+        {/* (4) Шаг: радио + "Другое…" */}
         {current.type === 'radio' && (
           <div className="mb-8">
             {current.options.map((option, idx) => {
@@ -221,7 +220,7 @@ export default function QuizPage() {
           </div>
         )}
 
-        {/* Шаг: контактные данные */}
+        {/* (5) Шаг: контактные данные */}
         {current.type === 'contact' && (
           <div className="mb-8">
             <p className="text-gray-600 text-lg mb-6">
@@ -235,11 +234,11 @@ export default function QuizPage() {
                 value={formData.phone}
                 onChange={(phone) => handleChange('phone', phone)}
                 placeholder="Номер телефона"
-                /* Отключаем встроенные стили react-phone-input-2 */
+                /* Отключаем inline-стили пакета */
                 containerStyle={{}}
                 inputStyle={{}}
                 buttonStyle={{}}
-                /* Используем Tailwind-классы */
+                /* Классы Tailwind */
                 containerClass="relative w-full"
                 inputClass="
                   pl-16
@@ -293,7 +292,7 @@ export default function QuizPage() {
           </div>
         )}
 
-        {/* Финальный шаг */}
+        {/* (6) Финальный шаг */}
         {current.type === 'final' && (
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-4 text-gray-800">
@@ -314,31 +313,34 @@ export default function QuizPage() {
                 Или посетите наши соцсети:
               </p>
               <div className="flex space-x-4">
+                {/* Иконка ВК */}
                 <a
                   href="https://vk.com/pegas_tomsk"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="button-flare flex items-center justify-center"
+                  className="button-flare flex items-center justify-center p-2"
                 >
-                  VK
+                  <img src="/icons/vk.svg" alt="VK" className="w-5 h-5" />
                   <span className="flare"></span>
                 </a>
+                {/* Иконка Telegram */}
                 <a
                   href="https://t.me/pegas_tomsk"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="button-flare flex items-center justify-center"
+                  className="button-flare flex items-center justify-center p-2"
                 >
-                  Telegram
+                  <img src="/icons/telegram.svg" alt="Telegram" className="w-5 h-5" />
                   <span className="flare"></span>
                 </a>
+                {/* Иконка OK */}
                 <a
                   href="https://ok.ru/group/70000007329147"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="button-flare flex items-center justify-center"
+                  className="button-flare flex items-center justify-center p-2"
                 >
-                  OK
+                  <img src="/icons/ok.svg" alt="OK" className="w-5 h-5" />
                   <span className="flare"></span>
                 </a>
               </div>
@@ -346,41 +348,44 @@ export default function QuizPage() {
           </div>
         )}
 
-        {/* Нижняя панель: Назад, прогресс, Далее */}
-        <div className="absolute bottom-0 left-0 w-full p-2">
-          <div className="flex items-center justify-between">
-            {currentStep > 0 && current.type !== 'final' ? (
-              <button
-                className="button-flare flex items-center justify-center"
-                onClick={goBack}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  className="w-5 h-5"
+        {/* (7) Панель внизу (Только если не финальный шаг) */}
+        {current.type !== 'final' && (
+          <div className="absolute bottom-0 left-0 w-full p-2">
+            <div className="flex items-center justify-between">
+              {/* Стрелка "Назад" */}
+              {currentStep > 0 ? (
+                <button
+                  className="button-flare flex items-center justify-center"
+                  onClick={goBack}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-                <span className="flare"></span>
-              </button>
-            ) : (
-              <div className="w-10 h-10"></div>
-            )}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  <span className="flare"></span>
+                </button>
+              ) : (
+                <div className="w-10 h-10"></div>
+              )}
 
-            <div className="flex items-center space-x-2">
-              <div className="progress-bar w-24 sm:w-48">
-                <div
-                  className="progress-bar-fill"
-                  style={{ width: `${progress}%` }}
-                ></div>
+              {/* Прогресс-бар */}
+              <div className="flex items-center space-x-2">
+                <div className="progress-bar w-24 sm:w-48">
+                  <div
+                    className="progress-bar-fill"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-gray-600">{progress}%</span>
               </div>
-              <span className="text-xs text-gray-600">{progress}%</span>
-            </div>
 
-            {current.type !== 'final' ? (
+              {/* Кнопка "Далее" */}
               <button
                 className="button-flare flex items-center"
                 onClick={current.type === 'contact' ? handleSubmit : goNext}
@@ -388,11 +393,9 @@ export default function QuizPage() {
                 Далее
                 <span className="flare"></span>
               </button>
-            ) : (
-              <div className="w-10 h-10"></div>
-            )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
