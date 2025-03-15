@@ -8,7 +8,7 @@ export async function POST(req) {
       const payload = {
         key: key,
         _format: 'json',
-        email_to: 'andfeoktistov@mail.ru,pegas.tomsk@mail.ru',
+        email_to: 'erkinbojurmanov3@gmail.com',
         email_from: process.env.UON_SMTP_FROM || 'no-reply@travel.tomsk.ru',
         subject: 'Результаты квиза',
         text: `Результаты квиза:\n${JSON.stringify(formData, null, 2)}`,
