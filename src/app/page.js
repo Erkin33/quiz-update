@@ -304,7 +304,7 @@ export default function QuizPage() {
                   rel="noopener noreferrer"
                   className="button-flare flex items-center justify-center p-2"
                 >
-                  <img src="/icons8Vk.svg" alt="иконка от icons8" className="w-[60px] h-[60px]" />
+                  <img src="/icons8VK.svg" alt="иконка от icons8" className="w-[60px] h-[60px]" />
                   <span className="flare"></span>
                 </a>
                 <a
