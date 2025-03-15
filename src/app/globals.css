@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -22,5 +22,71 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Open Sans', sans-serif;
+}
+/* Прогресс-бар со "змейкой" */
+@keyframes progressFlare {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+.progress-bar {
+  background: #e5e7eb; /* Серый фон */
+  height: 6px;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  background: #3E64FF;
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+  background-size: 200% 100%;
+  animation: progressFlare 2s infinite linear;
+}
+
+/* Кнопка с "бликом" */
+@keyframes flareAnimation {
+  0% { left: -100%; }
+  100% { left: 150%; }
+}
+.button-flare {
+  padding: 14px 30px;
+  background: linear-gradient(90deg, #3E64FF, #4F79FF);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  position: relative;
+  overflow-x: hidden;
+  display: inline-block;
+  transition: background 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+.button-flare:hover {
+  background: linear-gradient(90deg, #4F79FF, #3E64FF);
+}
+.button-flare .flare {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 60px;
+  transform: skewX(-45deg);
+  left: -100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background-size: 200% 100%;
+  animation: flareAnimation 2.5s infinite linear;
 }
