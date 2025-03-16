@@ -302,7 +302,7 @@ export default function QuizPage() {
                   rel="noopener noreferrer"
                   className="p-2 bg-transparent border-0"
                 >
-                  <img src="/icons8Vk.svg" alt="VK" className="w-[60px] h-[60px]" />
+                  <img src="/icons8VK.svg" alt="VK" className="w-[60px] h-[60px]" />
                 </a>
                 <a
                   href="https://t.me/pegas_tomsk"
