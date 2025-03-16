@@ -1,17 +1,12 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* Если нужна поддержка тёмной темы */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -23,12 +18,20 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
 }
-/* Прогресс-бар со "змейкой" */
+
+/* === Прогресс-бар со "змейкой" === */
 @keyframes progressFlare {
-  0% { background-position: -100% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
+
 .progress-bar {
   background: #e5e7eb; /* Серый фон */
   height: 6px;
@@ -36,14 +39,16 @@ body {
   position: relative;
   overflow: hidden;
 }
+
 .progress-bar-fill {
-  background: #3E64FF;
+  background: #60b822; /* Основной цвет заполнения */
   height: 100%;
   width: 0%;
   border-radius: 3px;
   position: relative;
   overflow: hidden;
 }
+
 .progress-bar-fill::after {
   content: '';
   position: absolute;
@@ -56,14 +61,21 @@ body {
   animation: progressFlare 2s infinite linear;
 }
 
-/* Кнопка с "бликом" */
+/* === Кнопка с "бликом" (button-flare) === */
 @keyframes flareAnimation {
-  0% { left: -100%; }
-  100% { left: 150%; }
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 150%;
+  }
 }
+
 .button-flare {
   padding: 14px 30px;
-  background: linear-gradient(90deg, #3E64FF, #4F79FF);
+  background: linear-gradient(90deg, #60b822, #60b822);
+  /* Можно сделать плавный градиент, например:
+     background: linear-gradient(90deg, #60b822, #5ca11f); */
   color: #ffffff;
   text-decoration: none;
   font-size: 16px;
@@ -76,9 +88,12 @@ body {
   border: none;
   cursor: pointer;
 }
+
 .button-flare:hover {
-  background: linear-gradient(90deg, #4F79FF, #3E64FF);
+  /* При ховере можно слегка менять оттенок, если нужно */
+  background: linear-gradient(90deg, #60b822, #5ca11f);
 }
+
 .button-flare .flare {
   position: absolute;
   top: 0;
