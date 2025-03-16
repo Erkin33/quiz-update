@@ -79,71 +79,75 @@ export default function QuizPage() {
   const current = steps[currentStep];
   const progress = Math.round((currentStep / (steps.length - 1)) * 100);
 
-  // Валидация без alert
+  // Универсальная валидация (без alert)
   const validateStep = () => {
-    if (current.type === 'date' && !formData.travelDate) {
-      return false;
-    }
-    if (current.type === 'radio' && !formData[current.key]) {
-      return false;
-    }
+    if (current.type === 'date' && !formData.travelDate) return false;
+    if (current.type === 'radio' && !formData[current.key]) return false;
     if (current.type === 'contact') {
-      if (!formData.phone || !formData.name || !formData.agreement) {
-        return false;
-      }
+      if (!formData.phone || !formData.name || !formData.agreement) return false;
     }
     return true;
   };
 
-  // "Далее" без alert; если шаг не валиден – просто не переходим
+  // Переход "Далее"
   const goNext = () => {
     if (!validateStep()) return;
     if (currentStep < steps.length - 1) {
-      setCurrentStep((prev) => prev + 1);
+      setCurrentStep(prev => prev + 1);
     }
   };
 
-  // "Назад"
+  // Переход "Назад"
   const goBack = () => {
     if (currentStep > 0) {
-      setCurrentStep((prev) => prev - 1);
+      setCurrentStep(prev => prev - 1);
     }
   };
 
-  // Автопереход при выборе радио
+  // Автоматический переход при выборе радио-ответа (без задержки)
   const handleRadioSelect = (stepKey, option) => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [stepKey]: option === 'Другое…' ? 'other' : option,
     }));
-    setTimeout(goNext, 300);
+    setCurrentStep(prev => prev + 1);
   };
 
-  // Изменение в инпутах
+  // Обработка изменений в инпутах
   const handleChange = (key, value) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
+    setFormData(prev => ({ ...prev, [key]: value }));
   };
 
-  // Автопереход при выборе даты
+  // Автоматический переход при выборе даты
   const handleDateSelect = (date) => {
-    setFormData((prev) => ({ ...prev, travelDate: date }));
-    setTimeout(goNext, 300);
+    setFormData(prev => ({ ...prev, travelDate: date }));
+    setCurrentStep(prev => prev + 1);
   };
 
-  // Финальная отправка (запрос к API-роуту)
+  // Финальная отправка – сначала создаем лид, затем отправляем email
   const handleSubmit = async () => {
     if (!validateStep()) return;
     try {
-      const res = await fetch('/api/sendEmail', {
+      // Создание обращения (лида)
+      const leadRes = await fetch('/api/createLead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const leadData = await leadRes.json();
+      console.log('Lead response:', leadData);
+
+      // Отправка письма с результатами квиза
+      const emailRes = await fetch('/api/sendEmail', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ formData }),
       });
-      if (res.ok) {
-        setCurrentStep((prev) => prev + 1); // переходим на финальный шаг
+      if (emailRes.ok) {
+        setCurrentStep(prev => prev + 1);
       } else {
-        const data = await res.json();
-        console.error('Ошибка отправки:', data.error);
+        const data = await emailRes.json();
+        console.error('Ошибка отправки email:', data.error);
       }
     } catch (error) {
       console.error('Ошибка:', error.message);
@@ -152,7 +156,7 @@ export default function QuizPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      {/* Добавляем pb-16, чтобы контент не наезжал на панель снизу */}
+      {/* Контейнер карточки с pb-16 для отступа снизу */}
       <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg p-4 sm:p-8 relative flex flex-col justify-center overflow-hidden pb-16">
         {/* Верхняя часть: аватар, имя, подсказка */}
         {current.type !== 'final' && (
@@ -194,7 +198,7 @@ export default function QuizPage() {
           </div>
         )}
 
-        {/* Шаг: радио + "Другое…" */}
+        {/* Шаг: радио с опцией "Другое…" */}
         {current.type === 'radio' && (
           <div className="mb-8">
             {current.options.map((option, idx) => {
@@ -252,7 +256,7 @@ export default function QuizPage() {
                 buttonStyle={{}}
                 containerClass="relative w-full"
                 inputClass="pl-16 w-full border border-gray-300 rounded-md py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                buttonClass="absolute left-2 top-2 bg-transparent border-none"
+                buttonClass="absolute left-2 top-2 bg-transparent border-0"
                 dropdownClass="bg-white border border-gray-300 rounded-md shadow mt-1"
               />
             </div>
@@ -302,28 +306,25 @@ export default function QuizPage() {
                   href="https://vk.com/pegas_tomsk"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="button-flare flex items-center justify-center p-2"
+                  className="flex items-center justify-center p-2 bg-transparent border-0"
                 >
-                  <img src="/icons8VK.svg" alt="иконка от icons8" className="w-[60px] h-[60px]" />
-                  <span className="flare"></span>
+                  <img src="/icons8Vk.svg" alt="VK" className="w-[60px] h-[60px]" />
                 </a>
                 <a
                   href="https://t.me/pegas_tomsk"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="button-flare flex items-center justify-center p-2"
+                  className="flex items-center justify-center p-2 bg-transparent border-0"
                 >
-                  <img src="/icons8TG.svg" alt="иконка от icons8" className="w-[60px] h-[60px]" />
-                  <span className="flare"></span>
+                  <img src="/icons8TG.svg" alt="Telegram" className="w-[60px] h-[60px]" />
                 </a>
                 <a
                   href="https://ok.ru/group/70000007329147"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="button-flare flex items-center justify-center p-2"
+                  className="flex items-center justify-center p-2 bg-transparent border-0"
                 >
-                  <img src="/icons8OK.svg" alt="иконка от icons8" className="w-[60px] h-[60px]" />
-                  <span className="flare"></span>
+                  <img src="/icons8OK.svg" alt="OK" className="w-[60px] h-[60px]" />
                 </a>
               </div>
             </div>
