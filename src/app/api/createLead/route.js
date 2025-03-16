@@ -1,6 +1,6 @@
 export async function POST(req) {
   try {
-    // Извлекаем все поля из запроса
+    // Извлекаем поля из запроса
     const {
       name,
       phone,
@@ -26,33 +26,39 @@ export async function POST(req) {
     const key = process.env.UON_API_KEY || 'LPbMe4y04ZO27b8P8Mra';
     const url = `https://api.u-on.ru/${key}/lead/create.json`;
 
-    // Формируем дополнительные данные (u_note) в «декодированном» виде:
-    let noteValue = '';
+    // Собираем дополнительные данные в поле u_note
+    const noteParts = [];
     if (travelDate) {
       const formattedDate = new Date(travelDate).toLocaleString('ru-RU');
-      noteValue += `Дата поездки: ${formattedDate}\n`;
+      noteParts.push(`Дата поездки: ${formattedDate}`);
     }
-    if (nights) noteValue += `Ночей: ${nights}\n`;
-    if (nightsOther) noteValue += `Ночей (другое): ${nightsOther}\n`;
-    if (adults) noteValue += `Взрослых: ${adults}\n`;
-    if (adultsOther) noteValue += `Взрослых (другое): ${adultsOther}\n`;
-    if (children) noteValue += `Детей: ${children}\n`;
-    if (childrenOther) noteValue += `Детей (другое): ${childrenOther}\n`;
-    if (!noteValue) {
-      noteValue = 'Дефолтное значение u_note';
-    }
+    if (nights) noteParts.push(`Ночей: ${nights}`);
+    if (nightsOther) noteParts.push(`Ночей (другое): ${nightsOther}`);
+    if (adults) noteParts.push(`Взрослых: ${adults}`);
+    if (adultsOther) noteParts.push(`Взрослых (другое): ${adultsOther}`);
+    if (children) noteParts.push(`Детей: ${children}`);
+    if (childrenOther) noteParts.push(`Детей (другое): ${childrenOther}`);
+    
+    const u_note = noteParts.length > 0 
+      ? noteParts.join('\n') 
+      : 'Дефолтное значение u_note';
 
-    // Собираем строку вручную без автоматического кодирования
-    // Здесь пробелы и переводы строк остаются как есть
-    const rawPayload = `source=Квиз с сайта&u_name=${name}&u_phone=${phone}&u_note=${noteValue}`;
+    // Формируем объект payload для JSON
+    const payload = {
+      key: key,
+      _format: 'json',
+      source: 'Квиз с сайта',
+      u_name: name,
+      u_phone: phone,
+      u_note: u_note,
+    };
 
-    console.log('Raw payload to send:', rawPayload);
+    console.log('JSON payload to send:', JSON.stringify(payload, null, 2));
 
-    // Отправляем запрос с Content-Type, как обычно
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: rawPayload,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     });
 
     if (response.ok) {
